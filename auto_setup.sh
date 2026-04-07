@@ -23,17 +23,11 @@ echo ""
 # =========================================================================
 # Step 1/5: Update Packages & Install Dependencies
 # =========================================================================
-echo "📦 Step 1/5: Updating packages and installing dependencies..."
+echo "📦 Step 1/5: Installing dependencies (this may take a minute)..."
 
-# Update with all non-interactive flags to prevent config file prompts
-pkg update -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" </dev/null 2>&1 || {
-    echo "⚠️  pkg update had warnings (this is usually fine, continuing...)"
-}
-
-# Install required packages (some may already exist — that's OK)
-pkg install -y curl nodejs git cmake make clang binutils nmap openssl android-tools which </dev/null 2>&1 || {
-    echo "⚠️  Some packages may have failed to install, checking essentials..."
-}
+# Quietly update and install to reduce screen noise
+pkg update -y -qq -o Dpkg::Options::="--force-confold" </dev/null >/dev/null 2>&1
+pkg install -y -qq curl nodejs git cmake make clang binutils nmap openssl android-tools which </dev/null >/dev/null 2>&1
 
 # Verify the critical ones exist
 MISSING=""
@@ -154,15 +148,15 @@ chmod +x "$SHIZUKU_DIR/copy.sh"
 
 # Check for the required .dex file
 if [ ! -f "$SHIZUKU_DIR/rish_shizuku.dex" ]; then
-    echo "❌ ERROR: rish_shizuku.dex not found in $SHIZUKU_DIR"
-    echo ""
-    echo "   To fix this:"
-    echo "   1. Open the Shizuku app"
-    echo "   2. Tap 'Use Shizuku in terminal apps'"
-    echo "   3. Tap 'Export files'"
-    echo "   4. Navigate to Internal Storage → Shizuku folder"
-    echo "   5. Tap 'Use this folder'"
-    echo "   6. Run this installer again!"
+    echo "❌ ERROR: rish_shizuku.dex not found!"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "HOW TO FIX:"
+    echo "1. Open Shizuku app"
+    echo "2. Tap 'Use Shizuku in terminal apps' (bottom)"
+    echo "3. Tap 'Export files' → pick Internal Storage"
+    echo "4. CREATE a folder named 'Shizuku' (if not there)"
+    echo "5. Tap 'USE THIS FOLDER' and run this again."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     exit 1
 fi
 
@@ -241,7 +235,8 @@ case "$CMD" in
         const regex = /(?:text|content-desc)=\\\"([^\\\"]+)\\\"[^>]*bounds=\\\"(\\\[[0-9]+,[0-9]+\\\\]\\\[[0-9]+,[0-9]+\\\])\\\"/g;
         let match;
         while ((match = regex.exec(xml)) !== null) {
-          if (match[1].trim() !== '') console.log(match[2] + ' ' + match[1]);
+          const text = match[1].trim().replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+          if (text !== '') console.log(match[2] + ' ' + text);
         }
       } catch(e) { console.log('Error reading UI'); }
     "
@@ -319,21 +314,17 @@ EOF
 
 echo "✅ Custom AI brain installed"
 
-# =========================================================================
-# 🎉 Done!
-# =========================================================================
+# Automated Health Check
+echo "🔍 Running Health Check..."
+if command -v rish >/dev/null && rish -c whoami >/dev/null 2>&1; then
+    echo "✅ Shizuku Link: ACTIVE"
+else
+    echo "⚠️  Shizuku Link: NOT CONNECTED (Run 'shizuku' later to link)"
+fi
+
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🎉 INSTALLATION COMPLETE!"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "📱 Connect Shizuku (if not already):"
-echo "   1. Open Shizuku app → make sure it says 'Shizuku is running'"
-echo "   2. Run: shizuku"
-echo "   3. Test: rish -c whoami"
-echo ""
-echo "🔑 Set up your API keys:"
+echo "📱 Quick Start:"
 echo "   1. Run: openclaw onboard"
-echo "   2. Run: openclaw auth add google --key YOUR_GEMINI_KEY"
+echo "   2. Run: openclaw auth add google --key YOUR_KEY"
 echo "   3. Run: openclaw gateway"
 echo ""
