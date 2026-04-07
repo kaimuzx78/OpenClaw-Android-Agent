@@ -6,6 +6,17 @@ Turn your phone into a fully autonomous AI-controlled device using Termux, Shizu
 
 ---
 
+## 🚀 What's New in this Version?
+
+Compared to the [original project](https://github.com/jarvesusaram99/Openclaw-Termux-NoRoot), this version includes several key enhancements for a better experience:
+
+- **Smoother Installation**: Optimized `auto_setup.sh` with reduced "log noise" and automated package handling.
+- **Enhanced UI Vision**: The agent uses a more robust XML parser for `ui-dump`, making it much more reliable at finding buttons in complex apps.
+- **Automated Health Checks**: New verification step at the end of installation to confirm your Shizuku link is actually working.
+- **Improved AI Brain**: Fine-tuned prompt engineering to prevent the agent from "giving up" on complex UI tasks.
+
+---
+
 ## How It Works
 
 ```
@@ -135,7 +146,13 @@ phone_control.sh       ← Generated at install time, handles all device command
 
 ---
 
-## Built On
+## 🙏 Credits
+
+This project is a fork and enhancement of the original work by **[jarvesusaram99](https://github.com/jarvesusaram99)**.
+
+- **Original Repository**: [Openclaw-Termux-NoRoot](https://github.com/jarvesusaram99/Openclaw-Termux-NoRoot)
+
+Other foundational tools:
 
 | Tool | Role |
 |---|---|
