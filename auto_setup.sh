@@ -20,14 +20,32 @@ echo "🤖 CloudBot Non-Root Phone Control Installer"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
+# ── Step 0: Storage Access ───────────────────────────────────────────────
+# We do this first because we need to read the Shizuku DEX from storage
+if [ ! -d "$HOME/storage" ]; then
+    echo "📂 Requesting storage access..."
+    echo "⚠️  A popup will appear. Please tap 'ALLOW' to continue."
+    termux-setup-storage
+    sleep 4
+fi
+
 # =========================================================================
 # Step 1/5: Update Packages & Install Dependencies
 # =========================================================================
 echo "📦 Step 1/5: Installing dependencies (this may take a minute)..."
 
-# Quietly update and install to reduce screen noise
-pkg update -y -qq -o Dpkg::Options::="--force-confold" </dev/null >/dev/null 2>&1
-pkg install -y -qq curl nodejs git cmake make clang binutils nmap openssl android-tools which </dev/null >/dev/null 2>&1
+# Ensure mirrors are working and install essentials
+# We show errors if this fails to help troubleshooting
+pkg update -y -qq -o Dpkg::Options::="--force-confold" || {
+    echo "⚠️  Package update failed. Trying to fix mirrors..."
+    pkg install -y termux-tools
+}
+
+pkg install -y nodejs git nmap android-tools curl || {
+    echo "❌ ERROR: Failed to install dependencies."
+    echo "   Try running 'termux-change-repo' and then run this script again."
+    exit 1
+}
 
 # Verify the critical ones exist
 MISSING=""
@@ -44,20 +62,10 @@ fi
 
 echo "✅ Dependencies installed"
 
-# =========================================================================
-# Step 2/5: Setup Shizuku (rish & shizuku commands)
+# Setup Shizuku (rish & shizuku commands)
 # =========================================================================
 echo ""
 echo "🔒 Step 2/5: Linking Shizuku to Termux..."
-
-# Setup Termux storage access (may show a popup on first run)
-if [ ! -d "$HOME/storage" ]; then
-    echo "A popup may appear asking for file permissions. Please tap 'Allow'."
-    echo "y" | termux-setup-storage > /dev/null 2>&1 || true
-    sleep 3
-else
-    echo "   Storage access already configured."
-fi
 
 SHIZUKU_DIR="$HOME/storage/shared/Shizuku"
 mkdir -p "$SHIZUKU_DIR" 2>/dev/null || true

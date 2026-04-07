@@ -69,6 +69,8 @@ Open **Termux** and run:
 curl -sL https://raw.githubusercontent.com/kaimuzx78/OpenClaw-Android-Agent/main/auto_setup.sh | bash
 ```
 
+> **Note:** The script will automatically ask for storage permissions (`termux-setup-storage`). Please tap **"Allow"** on the popup to ensure it can read the Shizuku files.
+
 The script will handle everything else automatically — packages, Shizuku linking, Node.js config, and AI brain setup.
 
 ### 4. Connect Your AI
