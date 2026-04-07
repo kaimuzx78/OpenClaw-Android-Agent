@@ -240,12 +240,15 @@ case "$CMD" in
       const fs = require('fs');
       try {
         const xml = fs.readFileSync('/sdcard/window_dump.xml', 'utf8');
-        const regex = /(?:text|content-desc)=\\\"([^\\\"]+)\\\"[^>]*bounds=\\\"(\\\[[0-9]+,[0-9]+\\\\]\\\[[0-9]+,[0-9]+\\\])\\\"/g;
-        let match;
-        while ((match = regex.exec(xml)) !== null) {
-          const text = match[1].trim().replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-          if (text !== '') console.log(match[2] + ' ' + text);
-        }
+        const nodes = xml.match(/<node [^>]+>/g) || [];
+        nodes.forEach(node => {
+          const text = (node.match(/text=\\\"([^\\\"]*)\\\"/) || [])[1] || '';
+          const desc = (node.match(/content-desc=\\\"([^\\\"]*)\\\"/) || [])[1] || '';
+          const id = (node.match(/resource-id=\\\"([^\\\"]*)\\\"/) || [])[1] || '';
+          const bounds = (node.match(/bounds=\\\"([^\\\"]+)\\\"/) || [])[1] || '';
+          const label = (text || desc || id).trim().replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+          if (label !== '') console.log(bounds + ' ' + label + (id ? ' (' + id + ')' : ''));
+        });
       } catch(e) { console.log('Error reading UI'); }
     "
     ;;
@@ -317,8 +320,13 @@ You must loop your tool calls continuously:
 5. Call `exec` -> `tap X Y`
 6. Repeat steps 3-5 until the requested task (e.g., Dark Mode) is FULLY COMPLETE.
 ONLY write a message to the user when the final goal is 100% achieved.
-EOF
 
+**Handling Errors & Rate Limits:**
+If you receive a '429 Rate Limit' error or a quota warning:
+1. DO NOT crash or stop.
+2. Wait at least 15 seconds before trying your next tool call.
+3. Be more concise in your next step to save tokens.
+EOF
 
 echo "✅ Custom AI brain installed"
 
