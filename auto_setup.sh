@@ -333,6 +333,6 @@ fi
 echo ""
 echo "📱 Quick Start:"
 echo "   1. Run: openclaw onboard"
-echo "   2. Run: openclaw auth add google --key YOUR_KEY"
+echo "   2. Run: openclaw configure   # <-- Add your Gemini key here!"
 echo "   3. Run: openclaw gateway"
 echo ""

@@ -77,7 +77,7 @@ The script will handle everything else automatically — packages, Shizuku linki
 
 ```bash
 openclaw onboard
-openclaw auth add google --key YOUR_GEMINI_KEY
+openclaw configure
 ```
 
 ### 5. Start the Agent
